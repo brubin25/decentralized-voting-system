@@ -1,104 +1,128 @@
-//import "../css/style.css"
+// import "../css/style.css" // Uncomment if needed
 
 const Web3 = require('web3');
 const contract = require('@truffle/contract');
-
 const votingArtifacts = require('../../build/contracts/Voting.json');
-var VotingContract = contract(votingArtifacts)
-
+const VotingContract = contract(votingArtifacts);
 
 window.App = {
-  eventStart: function() { 
-    window.ethereum.request({ method: 'eth_requestAccounts' });
-    VotingContract.setProvider(window.ethereum)
-    VotingContract.defaults({from: window.ethereum.selectedAddress,gas:6654755})
+  account: null,
 
-    // Load account data
-    App.account = window.ethereum.selectedAddress;
-    $("#accountAddress").html("Your Account: " + window.ethereum.selectedAddress);
-    VotingContract.deployed().then(function(instance){
-     instance.getCountCandidates().then(function(countCandidates){
+  eventStart: async function () {
+    if (typeof window.ethereum === 'undefined') {
+      alert("Please install MetaMask to use this app.");
+      return;
+    }
 
-            $(document).ready(function(){
-              $('#addCandidate').click(function() {
-                  var nameCandidate = $('#name').val();
-                  var partyCandidate = $('#party').val();
-                 instance.addCandidate(nameCandidate,partyCandidate).then(function(result){ })
+    try {
+      // Request account access and set account
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      App.account = accounts[0];
 
-            });   
-              $('#addDate').click(function(){             
-                  var startDate = Date.parse(document.getElementById("startDate").value)/1000;
+      console.log("Connected MetaMask account:", App.account);
 
-                  var endDate =  Date.parse(document.getElementById("endDate").value)/1000;
-           
-                  instance.setDates(startDate,endDate).then(function(rslt){ 
-                    console.log("tarihler verildi");
-                  });
+      // Set provider and default account
+      VotingContract.setProvider(window.ethereum);
+      VotingContract.defaults({ from: App.account, gas: 6654755 });
 
-              });     
+      $("#accountAddress").html("Your Account: " + App.account);
 
-               instance.getDates().then(function(result){
-                var startDate = new Date(result[0]*1000);
-                var endDate = new Date(result[1]*1000);
+      const instance = await VotingContract.deployed();
+      const countCandidates = await instance.getCountCandidates();
 
-                $("#dates").text( startDate.toDateString(("#DD#/#MM#/#YYYY#")) + " - " + endDate.toDateString("#DD#/#MM#/#YYYY#"));
-              }).catch(function(err){ 
-                console.error("ERROR! " + err.message)
-              });           
-          });
-             
-          for (var i = 0; i < countCandidates; i++ ){
-            instance.getCandidate(i+1).then(function(data){
-              var id = data[0];
-              var name = data[1];
-              var party = data[2];
-              var voteCount = data[3];
-              var viewCandidates = `<tr><td> <input class="form-check-input" type="radio" name="candidate" value="${id}" id=${id}>` + name + "</td><td>" + party + "</td><td>" + voteCount + "</td></tr>"
-              $("#boxCandidate").append(viewCandidates)
-            })
-        }
-        
-        window.countCandidates = countCandidates 
-      });
+      // Display election dates
+      instance.getDates().then(result => {
+        const start = new Date(result[0] * 1000);
+        const end = new Date(result[1] * 1000);
+        $("#dates").text(`${start.toDateString()} - ${end.toDateString()}`);
+      }).catch(err => console.error("Date Fetch Error:", err));
 
-      instance.checkVote().then(function (voted) {
-          console.log(voted);
-          if(!voted)  {
-            $("#voteButton").attr("disabled", false);
+      // Display candidates
+      for (let i = 0; i < countCandidates; i++) {
+        const data = await instance.getCandidate(i + 1);
+        const [id, name, party, votes] = data;
+        const row = `<tr><td><input class="form-check-input" type="radio" name="candidate" value="${id}" id=${id}>${name}</td><td>${party}</td><td>${votes}</td></tr>`;
+        $("#boxCandidate").append(row);
+      }
 
-          }
-      });
+      // Enable voting if not already voted
+      const voted = await instance.checkVote();
+      if (!voted) {
+        $("#voteButton").attr("disabled", false);
+      }
 
-    }).catch(function(err){ 
-      console.error("ERROR! " + err.message)
-    })
+    } catch (err) {
+      console.error("Initialization Error:", err);
+      alert("Failed to load contract or account.");
+    }
   },
 
-  vote: function() {    
-    var candidateID = $("input[name='candidate']:checked").val();
+  vote: async function () {
+    const candidateID = $("input[name='candidate']:checked").val();
     if (!candidateID) {
-      $("#msg").html("<p>Please vote for a candidate.</p>")
-      return
+      $("#msg").html("<p>Please vote for a candidate.</p>");
+      return;
     }
-    VotingContract.deployed().then(function(instance){
-      instance.vote(parseInt(candidateID)).then(function(result){
-        $("#voteButton").attr("disabled", true);
-        $("#msg").html("<p>Voted</p>");
-         window.location.reload(1);
-      })
-    }).catch(function(err){ 
-      console.error("ERROR! " + err.message)
-    })
-  }
-}
 
-window.addEventListener("load", function() {
-  if (typeof web3 !== "undefined") {
-    console.warn("Using web3 detected from external source like Metamask")
-    window.eth = new Web3(window.ethereum)
-  } else {
-    console.warn("No web3 detected. Falling back to http://localhost:9545. You should remove this fallback when you deploy live, as it's inherently insecure. Consider switching to Metamask for deployment. More info here: http://truffleframework.com/tutorials/truffle-and-metamask")
-    window.eth = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:9545"))
+    try {
+      console.log("Voting with account:", App.account);
+      const instance = await VotingContract.deployed();
+      await instance.vote(parseInt(candidateID), { from: App.account });
+
+      $("#voteButton").attr("disabled", true);
+      $("#msg").html("<p>Voted successfully!</p>");
+      window.location.reload();
+    } catch (err) {
+      console.error("Vote Error:", err);
+      alert("Voting failed.");
+    }
   }
-  window.App.eventStart()
-})
+};
+
+// ✅ Click Handlers: safely bound after App.account is set
+$(window).on('load', async function () {
+  await App.eventStart();
+
+  $('#addCandidate').on('click', async function () {
+    const name = $('#name').val();
+    const party = $('#party').val();
+
+    try {
+      console.log("Adding candidate with account:", App.account);
+      const instance = await VotingContract.deployed();
+      await instance.addCandidate(name, party, { from: App.account });
+      alert("Candidate added successfully!");
+      window.location.reload();
+    } catch (err) {
+      console.error("Add Candidate Error:", err);
+      alert("Failed to add candidate.");
+    }
+  });
+
+  $('#addDate').on('click', async function () {
+    const startDate = Date.parse(document.getElementById("startDate").value) / 1000;
+    const endDate = Date.parse(document.getElementById("endDate").value) / 1000;
+
+    try {
+      console.log("Setting dates with account:", App.account);
+      const instance = await VotingContract.deployed();
+      await instance.setDates(startDate, endDate, { from: App.account });
+      alert("Voting dates set.");
+    } catch (err) {
+      console.error("Set Date Error:", err);
+      alert("Failed to set dates.");
+    }
+  });
+});
+
+// 🔁 Update on MetaMask account switch
+if (window.ethereum) {
+  window.ethereum.on('accountsChanged', async function (accounts) {
+    App.account = accounts[0];
+    console.log("Switched MetaMask account to:", App.account);
+    $("#accountAddress").html("Your Account: " + App.account);
+
+    // Refresh app logic with new account
+    await App.eventStart();
+  });
+}
