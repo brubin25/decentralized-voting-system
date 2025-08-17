@@ -1,0 +1,21 @@
+#root {
+  /* max-width: 1280px; */
+  /* width: 80%; */
+  margin: 0 auto;
+  padding: 2rem;
+  /* text-align: center; */
+
+}
+
+.login-status{position: absolute;right: 0; top: 0;padding: 30px;}
+.login-status-info {
+  position: relative;
+  /* padding-left: 24px; */
+  display: flex; align-items: center;
+  margin-bottom: 10px;
+}
+/* .login-status-info .anticon{position: absolute;left: 0; top: 50%;width: 24px;height:24px;margin-top: -50%;display: block;} */
+
+.login-status-account,
+.login-status-wallet{font-size:24px;padding: 0 20px;color: #fff;}
+.login-status-wallet{font-size: 12px;padding-right: 0;}

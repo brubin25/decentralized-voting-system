@@ -1,0 +1,36 @@
+.vote-title{
+    font-size: 30px;
+    color: #fff;
+    text-shadow:2px 2px 2px rgba(0, 0, 0, 0.3) ;
+    font-weight: bold;
+}
+.vote{
+    padding: 50px;
+    background-color: rgba(255,255,255,0.6);
+    border-radius: 5px;
+}
+.vote-tips{
+    padding: 10px 0;
+    text-align: center;
+    font-size: 14px;
+}
+.vote-footer{
+    width: 360px;
+    margin: 0 auto;
+}
+.vote-stitle,
+.vote-time{
+    text-align: center;
+    font-weight: bold;
+    font-size: 24px;
+    text-shadow:2px 2px 2px rgba(0, 0, 0, 0.3) ;
+    color: #fff;
+
+}
+.vote-stitle{
+    padding: 20px 0;
+}
+.vote-time{
+    padding-bottom: 30px;
+    font-size: 16px;
+}

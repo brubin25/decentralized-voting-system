@@ -1,0 +1,13 @@
+.login{
+    background-color: rgba(255,255,255,0.95);
+    padding: 50px;
+    border-radius: 5px;
+    box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.3);
+}
+.login-title{
+    font-size: 30px;
+    color: #fff;
+    padding-bottom: 20px;
+    text-shadow:2px 2px 2px rgba(0, 0, 0, 0.3) ;
+    font-weight: bold;
+}

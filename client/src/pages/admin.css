@@ -1,0 +1,60 @@
+.admin-title{
+    font-size: 30px;
+    color: #fff;
+    text-shadow:2px 2px 2px rgba(0, 0, 0, 0.3) ;
+    font-weight: bold;
+    padding-bottom: 20px;
+}
+.admin{
+    background-color: rgba(255,255,255,0.95);
+    padding: 50px;
+    border-radius: 5px;
+    box-shadow: 2px 2px 20px rgba(0, 0, 0, 0.3);
+}
+.vpitem{
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+}
+.vpitemlabelwp{
+    flex-grow: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-align: end;
+    vertical-align: middle;
+    width: 20.833333333333336%;
+}
+.vpiteminput{
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    gap: 8px;
+}
+.vpiteminput .ant-form-item{margin-bottom: 0;flex: 1;}
+.vpiteminput .ant-form-item-control{max-width: 100%;position: relative;}
+.vpiteminput .ant-form-item-additional{position: absolute;left: 0;bottom: -24px;width: 100%;}
+.vpitemlabel {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    height: 32px;
+    color: rgba(0, 0, 0, 0.88);
+    font-size: 14px;
+}
+.vpitemlabel::before {
+    display: inline-block;
+    margin-inline-end: 4px;
+    color: #ff4d4f;
+    font-size: 14px;
+    font-family: SimSun, sans-serif;
+    line-height: 1;
+    content: "*";
+}
+.vpitemlabel::after {
+    content: ":";
+    position: relative;
+    margin-block: 0;
+    margin-inline-start: 2px;
+    margin-inline-end: 8px;
+}
