@@ -1,53 +1,67 @@
 // src/pages/Admin.jsx
 import './admin.css'
-import React from 'react';
+import React, { useState } from 'react';
 import { MinusCircleOutlined, PlusOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import { Button, Form, Input, Space, DatePicker, Row, Col } from 'antd';
 const { RangePicker } = DatePicker;
-const onFinish = values => {
-  console.log('Received values of form:', values);
+
+import { useVotingContract } from "../hooks/useVotingContract";
 
 
-  //   {
-  //     "title": "2342",
-  //     "users": [
-  //         {
-  //             "first": "234",
-  //             "last": "234"
-  //         }
-  //     ],
-  //     "RangePicker": [
-  //         "2025-08-05T04:00:00.000Z",
-  //         "2025-09-18T04:00:00.000Z"
-  //     ]
-  // }
-};
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 8 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 16 },
-  },
-};
-const style = { background: '#0092ff', padding: '8px 0' };
+
+
 const AdminPage = () => {
   console.log('Admin Page')
+
+  const { contract, account } = useVotingContract();
+  const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm();
+
   const initValues = {
-    // "title": "2342",
-    "users": [
+    candidates: [
       {
-        "first": "",
-        "last": ""
+        name: "",
+        party: ""
+      },
+      {
+        name: "",
+        party: ""
       }
     ],
-    // "RangePicker": [
-    //     "2025-08-05T04:00:00.000Z",
-    //     "2025-09-18T04:00:00.000Z"
-    // ]
   }
+
+
+
+  const handleCreateElection = async ({ title, candidates, startTs, endTs }) => {
+    if (!contract) return alert("合约未连接");
+    setLoading(true);
+    try {
+      const tx = await contract.createElection(
+        title,
+        candidates,
+        startTs,
+        endTs
+      );
+      // 等待交易上链
+      const receipt = await tx.wait();
+      console.log("TransactionReceipt:", receipt);
+      form.resetFields();
+    } catch (err) {
+      console.error("创建失败:", err.message);
+    }
+    setLoading(false);
+  };
+
+
+  const onFinish = values => {
+    console.log('Received values of form:', values);
+    const { title, candidates, dates } = values;
+    const startTs = dates[0].valueOf();
+    const endTs = dates[1].valueOf()
+    handleCreateElection({ title, candidates, startTs:startTs/1000, endTs:endTs/1000 })
+  };
+
+
   return (
     <>
       <div className="admin-title">Decentralized Voting Using Ethereum Blockchain</div>
@@ -61,37 +75,39 @@ const AdminPage = () => {
           labelCol={{ span: 5 }}
           wrapperCol={{ span: 19 }}
           size='large'
+          disabled={loading}
+          form={form}
 
         >
-          <Form.Item name="title" label="Vote for what" rules={[{ required: true }]}>
+          <Form.Item name="title" label="Activity Name" rules={[{ required: true }]}>
             <Input />
           </Form.Item>
 
-          <Form.List name="users">
+          <Form.List name="candidates">
             {(fields, { add, remove }) => (
               <>
-                {fields.map(({ key, name, ...restField },index) => (
+                {fields.map(({ key, name, ...restField }, index) => (
 
-                  <div key={key}  className='vpitem'>
-                    <div className='vpitemlabelwp'><label className="vpitemlabel" title="Vote for what">Candidate No.{index+1}</label></div>
+                  <div key={key} className='vpitem'>
+                    <div className='vpitemlabelwp'><label className="vpitemlabel">Candidate No.{index + 1}</label></div>
                     <div className='vpiteminput'>
                       <Form.Item
                         {...restField}
-                        name={[name, 'first']}
-                        rules={[{ required: true, message: 'Missing first name' }]}
+                        name={[name, 'name']}
+                        rules={[{ required: true, message: 'Missing The Name' }]}
                       >
-                        <Input placeholder="First Name" />
+                        <Input placeholder="Candidate's Name" />
                       </Form.Item>
                       <Form.Item
                         {...restField}
-                        name={[name, 'last']}
-                        rules={[{ required: true, message: 'Missing last name' }]}
+                        name={[name, 'party']}
+                        rules={[{ required: true, message: 'Missing The Party' }]}
                       >
-                        <Input placeholder="Last Name" />
+                        <Input placeholder="Party" />
                       </Form.Item>
-                      {fields.length>1?<MinusCircleOutlined onClick={() => remove(name)} style={{fontSize: '24px'}} />:<div style={{width: '24px',height:'24px'}}></div>}
-                      
-                      {index == fields.length - 1 ? <PlusCircleOutlined onClick={() => add()} style={{fontSize:'24px'}} /> : <div style={{width: '24px',height:'24px'}}></div>}
+                      {fields.length > 1 ? <MinusCircleOutlined onClick={() => remove(name)} style={{ fontSize: '24px' }} /> : <div style={{ width: '24px', height: '24px' }}></div>}
+
+                      {index == fields.length - 1 ? <PlusCircleOutlined onClick={() => add()} style={{ fontSize: '24px' }} /> : <div style={{ width: '24px', height: '24px' }}></div>}
                     </div>
                   </div>
 
@@ -103,15 +119,15 @@ const AdminPage = () => {
           <Form.Item
             label="Voting Dates"
             name="dates"
-            rules={[{ required: true, message: 'Please input!' }]}
+            rules={[{ required: true, message: 'Please Input Voting Dates!' }]}
           >
-            <RangePicker style={{width:'100%'}} />
+            <RangePicker style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item label={null}>
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit" loading={loading}>
               Create A Vote
             </Button>
-            <Button type="default" style={{width:'129px',marginLeft:'10px'}}>
+            <Button type="default" style={{ width: '129px', marginLeft: '10px' }} htmlType="reset">
               Reset
             </Button>
           </Form.Item>

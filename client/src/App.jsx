@@ -7,40 +7,39 @@ import Index from "./pages/Index";
 import Admin from "./pages/Admin";
 import Register from "./pages/Register";
 import withAuth from "./hoc/withAuth";
-import { UserOutlined,WalletOutlined } from '@ant-design/icons';
+import { UserOutlined, WalletOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
-import './App.css'
+import './App.css';
+import { VotingProvider, useVotingContract } from "./hooks/useVotingContract";
 
-
-// 使用 HOC 包裹页面
 const AuthIndex = withAuth(Index, ["user"]);
 const AuthAdmin = withAuth(Admin, ["admin"]);
 
-function App() {
+function AppContent() {
   const { user, logout } = useAuth();
-  console.log('App:',user)
+  const { account, connectWallet } = useVotingContract();
+
   return (
     <Router>
       <>
-        {
-          user?.role && (
+        {user?.role && (
           <div className="login-status">
             <div className="login-status-info">
-              <UserOutlined style={{fontSize:'24px',color:'#ffffff'}} />
+              <UserOutlined style={{ fontSize: '24px', color: '#fff' }} />
               <div className="login-status-account">{user.voter_id}</div>
-             
             </div>
             <div className="login-status-info">
-              <WalletOutlined  style={{fontSize:'24px',color:'#ffffff'}}  />
-              <div className="login-status-wallet">0x3F50aD108269A0bF1aF78E9b061F8D05F820b506</div>
+              <WalletOutlined style={{ fontSize: '24px', color: '#fff' }} />
+              <div className="login-status-wallet">{account || "未连接"}</div>
+              {!account && <Button onClick={connectWallet}>连接钱包</Button>}
             </div>
-             <Button onClick={()=>logout()}>Login Out</Button>
+            <Button onClick={logout}>Logout</Button>
           </div>
-          )
-        }
+        )}
+
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register/>}/>
+          <Route path="/register" element={<Register />} />
           <Route path="/index" element={<AuthIndex />} />
           <Route path="/admin" element={<AuthAdmin />} />
           <Route path="*" element={<Navigate to="/login" />} />
@@ -53,7 +52,9 @@ function App() {
 export default function RootApp() {
   return (
     <AuthProvider>
-      <App />
+      <VotingProvider>
+        <AppContent />
+      </VotingProvider>
     </AuthProvider>
   );
 }

@@ -17,7 +17,7 @@ app.use(express.json());
 const db = mysql.createConnection({
   host: '127.0.0.1', // ← fixed host
   user: 'root',
-  password: 'briandMSQL25!',
+  password: '123456',
   database: 'voter_db',
 });
 
@@ -70,6 +70,74 @@ app.get('/login', (req, res) => {
     res.json({ token, role: user.role });
   });
 });
+
+// ---------- Register new voter ----------
+app.post('/register', (req, res) => {
+  const { voter_id, role, password } = req.body;
+
+  if (!voter_id || !role || !password) {
+    return res.status(400).json({ message: 'Missing required fields' });
+  }
+
+  const query = 'INSERT INTO voters (voter_id, role, password) VALUES (?, ?, ?)';
+  db.query(query, [voter_id, role, password], (err, result) => {
+    if (err) {
+      console.error('❌ DB error:', err);
+      if (err.code === 'ER_DUP_ENTRY') {
+        return res.status(409).json({ message: 'Voter ID already exists' });
+      }
+      return res.status(500).json({ message: 'Database error' });
+    }
+
+    // 返回成功信息，保持统一 JSON 格式
+    return res.status(201).json({
+      message: 'Voter registered successfully',
+      voter: {
+        voter_id,
+        role
+      }
+    });
+  });
+});
+
+
+// ---------- Get all users ----------
+app.get('/users', authorizeUser, (req, res) => {
+  const query = 'SELECT voter_id, role FROM voters';
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error('❌ DB error:', err);
+      return res.status(500).json({ message: 'Database error' });
+    }
+
+    res.json(results);
+  });
+});
+
+// ---------- Update user's role ----------
+app.put('/update-role', authorizeUser, (req, res) => {
+  const { voter_id, role } = req.body;
+
+  if (!voter_id || !role) {
+    return res.status(400).json({ message: 'Missing voter_id or role' });
+  }
+
+  const query = 'UPDATE voters SET role = ? WHERE voter_id = ?';
+  db.query(query, [role, voter_id], (err, result) => {
+    if (err) {
+      console.error('❌ DB error:', err);
+      return res.status(500).json({ message: 'Database error' });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Voter not found' });
+    }
+
+    res.json({ message: 'Role updated successfully' });
+  });
+});
+
+
 
 // Static file routes
 app.get('/', (req, res) => {

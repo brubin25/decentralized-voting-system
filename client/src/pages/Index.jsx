@@ -1,14 +1,21 @@
 // src/pages/Index.jsx
 
 import './index.css'
-import React, { useState } from 'react';
-import { Button, Divider, Radio, Table } from 'antd';
+import React, { useState,useEffect } from 'react';
+import { Button,  Table } from 'antd';
+import { useVotingContract } from "../hooks/useVotingContract";
+import dayjs from "dayjs";
+
 
 const columns = [
   {
+    title:'ID',
+    dataIndex: 'id',
+  },
+  {
     title: 'Name',
     dataIndex: 'name',
-    render: text => <a>{text}</a>,
+    // render: text => <a>{text}</a>,
   },
   {
     title: 'Party',
@@ -16,60 +23,81 @@ const columns = [
   },
   {
     title: 'Total Vote',
-    dataIndex: 'votes',
+    dataIndex: 'voteCount',
   },
 ];
-const data = [
-  {
-    key: '1',
-    name: 'John Brown',
-    votes: 32,
-    party: 'New York No. 1 Lake Park',
-  },
-  {
-    key: '2',
-    name: 'Jim Green',
-    votes: 42,
-    party: 'London No. 1 Lake Park',
-  },
-  {
-    key: '3',
-    name: 'Joe Black',
-    votes: 32,
-    party: 'Sydney No. 1 Lake Park',
-  },
-  {
-    key: '4',
-    name: 'Disabled User',
-    votes: 99,
-    party: 'Sydney No. 1 Lake Park',
-  },
-];
+
 // rowSelection object indicates the need for row selection
-const rowSelection = {
-  onChange: (selectedRowKeys, selectedRows) => {
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-  },
-  getCheckboxProps: record => ({
-    name: record.name,
-  }),
-};
+// const rowSelection = {
+//   onChange: (selectedRowKeys, selectedRows) => {
+//     console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+//   },
+//   getCheckboxProps: record => ({
+//     name: record.name,
+//   }),
+// };
 
 
 export default function IndexPage() {
   console.log('Index page')
   const [select, setSelect] = useState(null);
+  const { contract, account } = useVotingContract();
+  const [elections, setElections] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+
+  const loadElections = async () => {
+    if (!contract) return;
+    setLoading(true);
+    try {
+      // const ids = await contract.getElectionIds();
+      const count = await contract.getElectionCount();
+      console.log('count:',count)
+
+      const list = [];
+      for (let id = 0; id < count; id++) {
+        const e = await contract.getElection(id);
+        console.log('e:',e)
+        const candidatesData=e[2]
+        const candidates=[];
+        candidatesData.forEach((c, i) => {
+          console.log(`候选人 #${c.id}:`, c.name, c.party, c.voteCount.toString());
+          candidates.push({name:c.name,party:c.party,voteCount:c.voteCount.toString(),id:c.id.toString()})
+        });
+        list.push({ id: e[0].toString(),title:e[1],starTs:dayjs(Number(e[3])*1000).format("YYYY-MM-DD HH:mm:ss"),endTs:dayjs(Number(e[4])*1000).format("YYYY-MM-DD HH:mm:ss"),candidates });
+      }
+      console.log('list:',list);
+      setElections(list);
+    } catch (err) {
+      console.error("加载失败:", err);
+    }
+    setLoading(false);
+  };
+
 
   const handleRowChange = (selectedRowKeys, selectedRows) => {
     console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
     setSelect(selectedRows[0])
   }
 
-  const handleVote = () => {
-    console.log('vote:', select)
-  }
+  const handleVote = async () => {
+    try {
+      console.log('toup:',elections[0].id, select.id)
+      const tx=await contract.vote(Number(elections[0].id), Number(select.id));
+      // 等待交易上链
+      const receipt = await tx.wait();
+      console.log("TransactionReceipt:", receipt);      
+      console.log("投票成功！");
+      loadElections();
+    } catch (err) {
+      console.error("投票失败:", err.message);
+      // alert("投票失败：" + err.message);
+    }
+  };
 
-
+  useEffect(() => {
+    loadElections();
+  }, [contract]);
 
   return (
     <>
@@ -77,15 +105,16 @@ export default function IndexPage() {
       <div className='vote-stitle'>
         Welcome for Voting
       </div>
-      <div className='vote-time'>Voting Dates: Wed Dec 31 1969 - Wed Dec 31 1969</div>
+      <div className='vote-time'>{!!elections[0] && <>Voting Dates: {elections[0].starTs} - {elections[0].endTs}</>}</div>
       <div className='vote'>
         <Table
           rowSelection={{ type: 'radio', onChange: handleRowChange }}
           columns={columns}
-          dataSource={data}
+          dataSource={elections[0]?.candidates}
           pagination={{ position: ['none'] }}
           bordered={true}
           loading={false}
+          rowKey='id'
         />
         <div className='vote-tips'>
           Please select one of the candidates and click the vote button.
