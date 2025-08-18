@@ -17,5 +17,6 @@
 /* .login-status-info .anticon{position: absolute;left: 0; top: 50%;width: 24px;height:24px;margin-top: -50%;display: block;} */
 
 .login-status-account,
-.login-status-wallet{font-size:24px;padding: 0 20px;color: #fff;}
+.login-status-wallet{font-size:16px;padding: 0 20px;color: #fff;}
 .login-status-wallet{font-size: 12px;padding-right: 0;}
+.login-status-footer .ant-btn{margin-right: 10px;}

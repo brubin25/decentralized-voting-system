@@ -4,11 +4,15 @@ import { Navigate } from "react-router-dom";
 
 import { LockOutlined, UserOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { Button, Checkbox, Form, Input,} from 'antd';
+import { useVotingContract } from "../hooks/useVotingContract";
+
 
 import './login.css'
 const App = () => {
 
   const { user, login } = useAuth();
+  const { connectWallet} = useVotingContract();
+  
 
   if (user?.isAuthenticated) {
     return <Navigate to={user.role === "admin" ? "/admin" : "/index"} replace />;
@@ -37,6 +41,7 @@ const App = () => {
         const {role,token}=data;
         console.log('登录接口：',role,token)
         login({role,token,voter_id})
+        connectWallet()
 
       })
       .catch(error => {

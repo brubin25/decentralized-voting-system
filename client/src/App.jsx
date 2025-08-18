@@ -17,7 +17,15 @@ const AuthAdmin = withAuth(Admin, ["admin"]);
 
 function AppContent() {
   const { user, logout } = useAuth();
-  const { account, connectWallet } = useVotingContract();
+  const { account, connectWallet, disconnectWallet,chainId } = useVotingContract();
+  console.log('wallet address：',account)
+  console.log('wallet chainId：',chainId)
+
+
+  const handleLogOut = () => {
+    logout();
+    disconnectWallet()
+  }
 
   return (
     <Router>
@@ -28,12 +36,20 @@ function AppContent() {
               <UserOutlined style={{ fontSize: '24px', color: '#fff' }} />
               <div className="login-status-account">{user.voter_id}</div>
             </div>
-            <div className="login-status-info">
-              <WalletOutlined style={{ fontSize: '24px', color: '#fff' }} />
-              <div className="login-status-wallet">{account || "未连接"}</div>
-              {!account && <Button onClick={connectWallet}>连接钱包</Button>}
+            {account && <>
+              <div className="login-status-info">
+                <WalletOutlined style={{ fontSize: '24px', color: '#fff' }} />
+                <div className="login-status-wallet">{account}</div>
+              </div>
+            </>}
+            <div className="login-status-footer">
+            <Button onClick={handleLogOut}>Logout</Button>
+            {
+              !account && <Button type="primary" onClick={connectWallet}>Connect Wallet</Button>
+            }
+            
             </div>
-            <Button onClick={logout}>Logout</Button>
+
           </div>
         )}
 
