@@ -1,32 +1,48 @@
+import React, { useState, useEffect } from 'react';
 import { Pie } from '@ant-design/plots';
 
-const PieChart = () => {
-  const config = {
-    data: [
-      { type: '分类一', value: 27 },
-      { type: '分类二', value: 25 },
-      { type: '分类三', value: 18 },
-      { type: '分类四', value: 15 },
-      { type: '分类五', value: 10 },
-      { type: '其他', value: 5 },
-    ],
-    angleField: 'value',
-    colorField: 'type',
+const PieChart = ({data}) => {
+  console.log('pichat:',data)
+  const [chartData, setChartData] = useState(data);
+  const [options, setOptions] = useState({
+    data: chartData,
+    // xField: 'category',
+    // yField: 'value',
+    // seriesField: 'type',
+    angleField: 'voteCount',
+    colorField: 'name',
+    autoFit: true,
     label: {
-      text: 'value',
-      style: {
-        fontWeight: 'bold',
-      },
+      text: 'name',
+      position: 'outside',
     },
-    legend: {
-      color: {
-        title: false,
-        position: 'right',
-        rowPadding: 5,
-      },
-    },
-  };
-  return <Pie {...config} />;
+    legend: false,
+    // data: [
+    //   {
+    //     "name": "a",
+    //     "voteCount": 1,
+    //   },
+    //   {
+    //     "name": "b",
+    //     "voteCount": 2,
+    //   }
+    // ]
+
+
+  });
+
+  useEffect(() => {
+    console.log('data 更新了：',data)
+    setChartData(data);
+    setOptions(prevOptions => ({ ...prevOptions, data: data }));
+  }, [data]);
+
+  if(options.data && options.data.length>0){
+    console.log('渲染数据图：',options.data)
+    return <Pie {...options} />;
+  } else {
+    return <></>
+  }
 };
 
 export default PieChart;

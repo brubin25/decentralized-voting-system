@@ -5,9 +5,20 @@
     font-weight: bold;
 }
 .vote{
-    padding: 50px;
-    background-color: rgba(255,255,255,0.6);
+    padding: 20px;
+    background-color: rgba(255,255,255,0.9);
     border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+.vote-table{
+    width: 500px;
+    /* background-color: aqua; */
+    padding:0 20px;
+}
+.vote-chart{
+    width: 300px;
+    height: 300px;
 }
 .vote-tips{
     padding: 10px 0;
