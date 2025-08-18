@@ -1,1 +1,19 @@
-build
+# 通用
+node_modules/
+dist/
+build/
+.env
+.DS_Store
+
+# React 前端
+client/node_modules/
+client/build/
+
+# Node.js 后端
+server/node_modules/
+server/logs/
+server/.env
+
+# Truffle/智能合约
+smart-contract/build/
+
