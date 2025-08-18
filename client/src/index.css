@@ -23,6 +23,7 @@ a:hover {
 }
 
 body {
+  position: relative;
   margin: 0;
   display: flex;
   place-items: center;
@@ -30,6 +31,16 @@ body {
   min-height: 100vh;
   background: url('./assets/bg.png') no-repeat center;
   background-size: cover;
+}
+body::before{
+  content: "";
+  display: block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background-color: rgba(0, 0,0,0.3);
+      /* backdrop-filter: blur(2px) */
 }
 
 h1 {
