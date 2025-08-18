@@ -11,6 +11,13 @@
     width: 700px;
     margin: 0 auto;
 }
+.hst-cont p{
+    margin: 0;
+}
+.hst-cont h2,
+.hst-cont h3{
+    margin: 0;
+}
 .decoded {
   background-color: rgba(0,0,0,0.1);
   padding: 10px;
