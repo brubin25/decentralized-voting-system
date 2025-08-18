@@ -3,7 +3,7 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { ethers } from "ethers";
 import VotingABI from "../contracts/Voting.json";
 
-const CONTRACT_ADDRESS = "0x6AF4995b44D53ce146C27C9187764c0bb2b8c184";
+const CONTRACT_ADDRESS = "0x06e88525B65d18a69A5659e9b5766E3482a24d29";
 
 const VotingContext = createContext();
 

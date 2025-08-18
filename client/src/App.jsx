@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Index from "./pages/Index";
 import Admin from "./pages/Admin";
 import Register from "./pages/Register";
+import BlockExplorer from "./pages/History";
 import withAuth from "./hoc/withAuth";
 import { UserOutlined, WalletOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
@@ -54,6 +55,7 @@ function AppContent() {
         )}
 
         <Routes>
+          <Route path="/history" element={<BlockExplorer/>}/>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/index" element={<AuthIndex />} />

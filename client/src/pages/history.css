@@ -1,0 +1,18 @@
+.hst-root{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255,255,255,0.8);
+    left: 0;
+    top:0;
+    overflow: auto;
+}
+.hst-cont{
+    width: 700px;
+    margin: 0 auto;
+}
+.decoded {
+  background-color: rgba(0,0,0,0.1);
+  padding: 10px;
+  border-radius: 5px;
+}
