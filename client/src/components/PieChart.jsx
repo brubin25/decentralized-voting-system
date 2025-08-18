@@ -14,7 +14,7 @@ const PieChart = ({data}) => {
     autoFit: true,
     label: {
       text: 'name',
-      position: 'outside',
+      position: 'inside',
     },
     legend: false,
     // data: [
