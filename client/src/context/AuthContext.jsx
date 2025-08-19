@@ -7,7 +7,6 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  // 初始化时从 localStorage 恢复用户信息
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
