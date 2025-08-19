@@ -2,9 +2,9 @@
 pragma solidity ^0.8.20;
 
 contract Voting {
-    // ---------- 结构体定义 ----------
+    // ----------Structure ----------
     struct Candidate {
-        uint256 id;         // 候选人唯一 ID
+        uint256 id;         // Candidate ID
         string name;
         string party;
         uint256 voteCount;
@@ -16,7 +16,7 @@ contract Voting {
     }
 
     struct Election {
-        uint256 id;              // 唯一 electionId
+        uint256 id;              // Only electionId
         string title;
         Candidate[] candidates;
         uint64 startTs;
@@ -25,15 +25,15 @@ contract Voting {
         bool exists;
     }
 
-    // ---------- 状态变量 ----------
+    // ---------- state variable ----------
     Election[] public elections; 
     mapping(uint256 => mapping(address => bool)) public hasVoted; // electionId => voter => bool
 
-    // ---------- 事件 ----------
+    // ---------- event ----------
     event ElectionCreated(uint256 indexed electionId, address indexed admin, string title);
     event Voted(uint256 indexed electionId, uint256 indexed candidateId, address indexed voter);
 
-    // ---------- 创建投票 ----------
+    // ---------- Create voting ----------
     function createElection(
         string memory title,
         CandidateInput[] memory _candidates,
@@ -54,7 +54,7 @@ contract Voting {
         e.admin = msg.sender;
         e.exists = true;
 
-        // 初始化候选人，候选人 id = 数组下标
+        // Initialize the candidate, candidate id = array index
         for (uint i = 0; i < _candidates.length; i++) {
             e.candidates.push(
                 Candidate({
@@ -69,7 +69,7 @@ contract Voting {
         emit ElectionCreated(newElectionId, msg.sender, title);
     }
 
-    // ---------- 投票 ----------
+    // ---------- Voting ----------
     function vote(uint256 electionId, uint256 candidateId) external {
         //require(electionId < elections.length, "Election not found");
         Election storage e = elections[electionId];
@@ -78,7 +78,7 @@ contract Voting {
         require(block.timestamp <= e.endTs, "Voting ended");
         require(!hasVoted[electionId][msg.sender], "Already voted");
 
-        // 遍历候选人数组查找 candidate.id
+        // Traverse the candidate array to search candidate.id
         bool found = false;
         for (uint i = 0; i < e.candidates.length; i++) {
             if (e.candidates[i].id == candidateId) {
@@ -95,7 +95,7 @@ contract Voting {
     }
 
 
-    // ---------- 查询 ----------
+    // ---------- Query ----------
     function getElection(uint256 electionId)
         external
         view
