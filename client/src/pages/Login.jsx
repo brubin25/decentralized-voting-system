@@ -39,7 +39,7 @@ const App = () => {
       })
       .then(data => {
         const {role,token}=data;
-        console.log('登录接口：',role,token)
+        console.log('Login interface:',role,token)
         login({role,token,voter_id})
         connectWallet()
 
