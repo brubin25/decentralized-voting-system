@@ -23,9 +23,9 @@ const db = mysql.createConnection({
 
 db.connect((err) => {
   if (err) {
-    console.error('❌ MySQL connection error:', err);
+    console.error('MySQL connection error:', err);
   } else {
-    console.log('✅ MySQL connected successfully');
+    console.log('MySQL connected successfully');
   }
 });
 
@@ -53,7 +53,7 @@ app.get('/login', (req, res) => {
   const query = 'SELECT * FROM voters WHERE voter_id = ? AND password = ?';
   db.query(query, [voter_id, password], (err, results) => {
     if (err) {
-      console.error('❌ DB error:', err);
+      console.error('DB error:', err);
       return res.status(500).json({ message: 'Database error' });
     }
 
@@ -82,7 +82,7 @@ app.post('/register', (req, res) => {
   const query = 'INSERT INTO voters (voter_id, role, password) VALUES (?, ?, ?)';
   db.query(query, [voter_id, role, password], (err, result) => {
     if (err) {
-      console.error('❌ DB error:', err);
+      console.error('DB error:', err);
       if (err.code === 'ER_DUP_ENTRY') {
         return res.status(409).json({ message: 'Voter ID already exists' });
       }
@@ -104,7 +104,7 @@ app.get('/users', authorizeUser, (req, res) => {
   const query = 'SELECT voter_id, role FROM voters';
   db.query(query, (err, results) => {
     if (err) {
-      console.error('❌ DB error:', err);
+      console.error('DB error:', err);
       return res.status(500).json({ message: 'Database error' });
     }
 
@@ -123,7 +123,7 @@ app.put('/update-role', authorizeUser, (req, res) => {
   const query = 'UPDATE voters SET role = ? WHERE voter_id = ?';
   db.query(query, [role, voter_id], (err, result) => {
     if (err) {
-      console.error('❌ DB error:', err);
+      console.error('DB error:', err);
       return res.status(500).json({ message: 'Database error' });
     }
 
@@ -188,5 +188,5 @@ app.get('/favicon.ico', (req, res) => {
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`Server running at http://localhost:${PORT}`);
 });
