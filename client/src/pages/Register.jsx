@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { LockOutlined, UserOutlined, EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
 import { Button, Form, Input, message } from 'antd';
-import { useNavigate } from 'react-router-dom'; // ← 引入 useNavigate
+import { useNavigate } from 'react-router-dom';
 import './login.css'
 
 const App = () => {
