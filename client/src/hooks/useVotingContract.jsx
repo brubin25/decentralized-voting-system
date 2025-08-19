@@ -59,7 +59,7 @@ export function VotingProvider({ children }) {
         setChainId(network.chainId.toString());
       }
     } catch (err) {
-      console.error("检查授权状态失败:", err);
+      console.error("Authorization status check failed:", err);
     }
   };
 
