@@ -67,7 +67,7 @@ export default function IndexPage() {
       const candidatesData = e[2]
       const candidates = [];
       candidatesData.forEach((c, i) => {
-        console.log(`候选人 #${c.id}:`, c.name, c.party, c.voteCount.toString());
+        console.log(`candidate #${c.id}:`, c.name, c.party, c.voteCount.toString());
         candidates.push({ name: c.name, party: c.party, voteCount: Number(c.voteCount), id: c.id.toString() })
       });
       // list.push({ id: e[0].toString(), title: e[1], starTs: dayjs(Number(e[3]) * 1000).format("YYYY-MM-DD HH:mm:ss"), endTs: dayjs(Number(e[4]) * 1000).format("YYYY-MM-DD HH:mm:ss"), candidates });
@@ -78,7 +78,7 @@ export default function IndexPage() {
       console.log('candidates', candidates)
       setChart(candidates);
     } catch (err) {
-      console.error("加载失败:", err);
+      console.error("fail to load:", err);
     }
     setLoading(false);
   };
@@ -93,14 +93,14 @@ export default function IndexPage() {
     try {
       console.log('toup:', data.id, select.id)
       const tx = await contract.vote(Number(data.id), Number(select.id));
-      // 等待交易上链
+      // Waiting for the transaction to be on the chain
       const receipt = await tx.wait();
       console.log("TransactionReceipt:", receipt);
-      console.log("投票成功！");
+      console.log("The vote was successful");
       loadElections();
     } catch (err) {
-      console.error("投票失败:", err.message);
-      // alert("投票失败：" + err.message);
+      console.error("Vote failed:", err.message);
+      // alert("Vote failed：" + err.message);
     }
   };
 
