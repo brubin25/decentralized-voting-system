@@ -33,7 +33,7 @@ const AdminPage = () => {
 
 
   const handleCreateElection = async ({ title, candidates, startTs, endTs }) => {
-    if (!contract) return alert("合约未连接");
+    if (!contract) return alert("Contract is not connected");
     setLoading(true);
     try {
       const tx = await contract.createElection(
@@ -42,12 +42,12 @@ const AdminPage = () => {
         startTs,
         endTs
       );
-      // 等待交易上链
+      
       const receipt = await tx.wait();
       console.log("TransactionReceipt:", receipt);
       form.resetFields();
     } catch (err) {
-      console.error("创建失败:", err.message);
+      console.error("Creat error:", err.message);
     }
     setLoading(false);
   };
