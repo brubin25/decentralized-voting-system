@@ -88,8 +88,6 @@ app.post('/register', (req, res) => {
       }
       return res.status(500).json({ message: 'Database error' });
     }
-
-    // 返回成功信息，保持统一 JSON 格式
     return res.status(201).json({
       message: 'Voter registered successfully',
       voter: {
