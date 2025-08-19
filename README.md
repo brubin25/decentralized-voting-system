@@ -194,7 +194,3 @@ npm run dev
 - Blockchain-based vote result auditing
 - Encrypted, decentralized voter registry
 - Mobile wallet support
-
-## License
-
-Licensed under the MIT License.
