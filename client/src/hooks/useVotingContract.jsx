@@ -87,7 +87,7 @@ export function VotingProvider({ children }) {
 
   const handleChainChanged = async (chainIdHex) => {
     console.log("Network changed:", chainIdHex);
-    await checkAuthorized(); // 复用已有逻辑
+    await checkAuthorized();
   };
 
 
