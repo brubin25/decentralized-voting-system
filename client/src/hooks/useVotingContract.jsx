@@ -42,12 +42,10 @@ export function VotingProvider({ children }) {
     setChainId(null);
   };
 
-  // 页面刷新时检查是否已经授权过
   const checkAuthorized = async () => {
     try {
       const accounts = await window.ethereum.request({ method: "eth_accounts" });
       if (accounts.length > 0) {
-        // 已经授权过，直接恢复状态
         const provider = new ethers.BrowserProvider(window.ethereum);
         const signer = await provider.getSigner();
         const account = accounts[0];
@@ -65,7 +63,6 @@ export function VotingProvider({ children }) {
     }
   };
 
-  // 监听钱包地址变化
   const handleAccountsChanged = async (accounts) => {
     if (accounts.length > 0) {
       const provider = new ethers.BrowserProvider(window.ethereum);
@@ -80,7 +77,6 @@ export function VotingProvider({ children }) {
       setContract(contract);
       setChainId(network.chainId.toString());
     } else {
-      // 没有账号，清空状态
       setProvider(null);
       setSigner(null);
       setAccount(null);
@@ -89,7 +85,6 @@ export function VotingProvider({ children }) {
     }
   };
 
-  // 监听网络变化
   const handleChainChanged = async (chainIdHex) => {
     console.log("网络切换:", chainIdHex);
     await checkAuthorized(); // 复用已有逻辑
@@ -100,13 +95,11 @@ export function VotingProvider({ children }) {
 
     if (!window.ethereum) return;
 
-    // 页面初始连接
     checkAuthorized();
 
     window.ethereum.on("accountsChanged", handleAccountsChanged);
     window.ethereum.on("chainChanged", handleChainChanged);
 
-    // 清理监听器
     return () => {
       if (window.ethereum.removeListener) {
         window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
