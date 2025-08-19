@@ -8,7 +8,7 @@ const App = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
-  const navigate = useNavigate(); // ← 初始化路由跳转
+  const navigate = useNavigate(); // ← Initialize the router jump
 
   const onFinish = async (values) => {
     const { username, password, password2 } = values;
@@ -42,9 +42,9 @@ const App = () => {
           content: data.message || "Registration successful",
         });
 
-        // 注册成功后跳转到 login 页面
+        // After successful registration, it will redirect to the login page
         setTimeout(() => {
-          navigate('/login'); // ← 替换为你 login 页面路由
+          navigate('/login'); // ← Replace it with login page router
         }, 1000);
       } else {
         const error = await res.json();
