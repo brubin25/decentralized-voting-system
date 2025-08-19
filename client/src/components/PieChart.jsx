@@ -6,9 +6,6 @@ const PieChart = ({data}) => {
   const [chartData, setChartData] = useState(data);
   const [options, setOptions] = useState({
     data: chartData,
-    // xField: 'category',
-    // yField: 'value',
-    // seriesField: 'type',
     angleField: 'voteCount',
     colorField: 'name',
     autoFit: true,
@@ -17,28 +14,16 @@ const PieChart = ({data}) => {
       position: 'inside',
     },
     legend: false,
-    // data: [
-    //   {
-    //     "name": "a",
-    //     "voteCount": 1,
-    //   },
-    //   {
-    //     "name": "b",
-    //     "voteCount": 2,
-    //   }
-    // ]
-
-
   });
 
   useEffect(() => {
-    console.log('data 更新了：',data)
+    console.log('data updated：',data)
     setChartData(data);
     setOptions(prevOptions => ({ ...prevOptions, data: data }));
   }, [data]);
 
   if(options.data && options.data.length>0){
-    console.log('渲染数据图：',options.data)
+    console.log('Render data chart：',options.data)
     return <Pie {...options} />;
   } else {
     return <></>
